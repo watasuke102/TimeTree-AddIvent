@@ -149,7 +149,7 @@ class MPState extends State<MainPage>
           )),
         ]),
         // 日付
-        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "*日付（例→ 2000-01-01）")),
+        TextField(onChanged:(value) => date = value, decoration: InputDecoration(labelText: "*日付（例→ 2000-01-01）")),
         Row(children:
         [
           // 終日かどうか
@@ -166,13 +166,13 @@ class MPState extends State<MainPage>
           Flexible(child:TextField
           (
             onChanged:(value) => time = value,
-            decoration: InputDecoration(hintText: "*時刻（例→ 23:05）")
+            decoration: InputDecoration(labelText: "*時刻（例→ 23:05）")
           ))
         ]),
         // タイトル
-        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "*タイトル")),
+        TextField(onChanged:(value) => title = value, decoration: InputDecoration(labelText: "*タイトル")),
         // メモ
-        TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "メモ"), maxLines: null),
+        TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(labelText: "メモ"), maxLines: null),
         Container(height: 20),
         // 追加ボタン
         RaisedButton(onPressed: () => addIvent(), child: Text("予定を作成する",style: Theme.of(context).textTheme.headline4)),
