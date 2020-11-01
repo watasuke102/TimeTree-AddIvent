@@ -40,12 +40,13 @@ class MPState extends State<MainPage>
     SharedPreferences pref = await SharedPreferences.getInstance();
     String apiKey     = pref.getString("apiKey");
     String calendarID = pref.getString("calendarID");
-    if(
-      apiKey     == "" ||
-      calendarID == "" ||
-      date       == "" ||
-      title      == ""
-    )
+    if(apiKey     == "" || calendarID == "")
+    {
+      showDialog(context: context, builder:(context) =>
+      AlertDialog(title: Text("Error"), content: Text("Please set API key or calendar ID")));
+      return;
+    }
+    if(date == "" || title == "" || (allDay && time==""))
     {
       showDialog(context: context, builder:(context) =>
       AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
@@ -97,7 +98,7 @@ class MPState extends State<MainPage>
           )),
         ]),
         // 日付
-        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "Date ex.2000-01-01")),
+        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "Date ex.2000-01-01*")),
         Row(children:
         [
           // 終日かどうか
@@ -118,7 +119,7 @@ class MPState extends State<MainPage>
           ))
         ]),
         // タイトル
-        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "Title")),
+        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "Title*")),
         // メモ
         TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "Memo"), maxLines: null),
         Container(height: 20),
