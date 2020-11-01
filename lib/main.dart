@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final int CATEGORY_SUBMISSION = 1;
@@ -24,8 +24,6 @@ class App extends StatelessWidget
 class MainPage extends StatefulWidget
 {
   MainPage({Key key}) : super(key: key);
-
-
   @override MPState createState() => MPState();
 }
 class MPState extends State<MainPage>
@@ -33,34 +31,44 @@ class MPState extends State<MainPage>
   bool   allDay=false;
   int    category=CATEGORY_SUBMISSION;
   String date="", time="", title="", memo="";
-  String debgJson="-json here-";
+  String debug="json here";
 
   Future addIvent() async
   {
     SharedPreferences pref = await SharedPreferences.getInstance();
     String apiKey     = pref.getString("apiKey");
     String calendarID = pref.getString("calendarID");
-    if(apiKey     == "" || calendarID == "")
+    if(apiKey == "" || calendarID == "")
     {
       showDialog(context: context, builder:(context) =>
-      AlertDialog(title: Text("Error"), content: Text("Please set API key or calendar ID")));
+        AlertDialog(title: Text("Error"), content: Text("Please set API key or calendar ID")));
       return;
     }
-    if(date == "" || title == "" || (allDay && time==""))
+    if(date == "" || title == "" || (!allDay && time==""))
     {
       showDialog(context: context, builder:(context) =>
-      AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
+        AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
       return;
     }
-    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo}","all_day": false,"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${calendarID},${category}","type": "label"}}}}}';
+    if(allDay) time="00:00";
+    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo.replaceAll("\n", "\\n")}","all_day": ${allDay},"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${calendarID},${category}","type": "label"}}}}}';
+    time="";
+    setState(()=>debug=json);
     Map<String,String> headers=
     {
       "Content-Type"  : "application/json",
       "Accept"        : "application/vnd.timetree.v1+json",
       "Authorization" : "Bearer ${apiKey}"
     };
-    
-    setState(() => debgJson=json);
+    Response resp = await post
+    (
+      "https://timetreeapis.com/calendars/${calendarID}/events",
+      headers: headers,
+      body: json
+    );
+    if(resp.statusCode != 200)
+      showDialog(context: context, builder:(context) =>
+        AlertDialog(title: Text("Error"), content: Text("Failed to post: ${resp.statusCode}\n${resp.body}")));
   }
 
   @override Widget build(BuildContext context)
@@ -132,7 +140,7 @@ class MPState extends State<MainPage>
         Container(height: 20),
         // 追加ボタン
         RaisedButton(onPressed: () => addIvent(), child: Text("Add")),
-        Text(debgJson)
+        Text(debug)
       ]))
     );
   }
