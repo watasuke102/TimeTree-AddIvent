@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,9 +68,20 @@ class MPState extends State<MainPage>
       headers: headers,
       body: json
     );
-    if(resp.statusCode != 200)
+    int stat=resp.statusCode;
+    if(stat != 200 && stat != 201)
+    {
+      Map<String, dynamic> json = jsonDecode(resp.body);
+      String errors=json["errors"].toString();
+      errors = errors.replaceAll("{", "");
+      errors = errors.replaceAll("}", "");
+      errors = errors.replaceAll(",", "\n");
       showDialog(context: context, builder:(context) =>
-        AlertDialog(title: Text("Error"), content: Text("Failed to post: ${resp.statusCode}\n${resp.body}")));
+        AlertDialog(title: Text("Error"), content: Text("Failed to post: ${stat}\n\n${errors}")));
+      return;
+    }
+    showDialog(context: context, builder:(context) =>
+      AlertDialog(title: Text("Completed!"), content: Text("Complete post: ${stat}")));
   }
 
   @override Widget build(BuildContext context)
