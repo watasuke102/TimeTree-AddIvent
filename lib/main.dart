@@ -1,12 +1,27 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final int CATEGORY_SUBMISSION = 1;
-final int CATEGORY_EXAM       = 2;
-final int CATEGORY_IVENT      = 3;
+
+class _data
+{
+  String apiKey="", calendarID="";
+  int category_submission=1, category_exam=2, category_ivent=3;
+
+  Future init() async
+  {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    apiKey              = pref.getString("apiKey");
+    calendarID          = pref.getString("calendarID");
+    category_submission = pref.getInt("category_submission");
+    category_exam       = pref.getInt("category_exam");
+    category_ivent      = pref.getInt("category_ivent");
+  }
+}
+_data data=_data();
 
 void main()=>runApp(App());
 
@@ -31,59 +46,63 @@ class MainPage extends StatefulWidget
 class MPState extends State<MainPage>
 {
   bool   allDay=false;
-  int    category=CATEGORY_SUBMISSION;
+  int    category=data.category_submission;
   String date="", time="", title="", memo="";
   String debug="json here";
 
   Future addIvent() async
   {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String apiKey     = pref.getString("apiKey");
-    String calendarID = pref.getString("calendarID");
-    if(apiKey == "" || calendarID == "")
+    if(data.apiKey == "" || data.calendarID == "")
     {
       showDialog(context: context, builder:(context) =>
-        AlertDialog(title: Text("Error"), content: Text("Please set API key or calendar ID")));
+        AlertDialog(title: Text("Error"), content: Text("APIキーもしくはカレンダーIDガセットされていません")));
       return;
     }
     if(date == "" || title == "" || (!allDay && time==""))
     {
       showDialog(context: context, builder:(context) =>
-        AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
+        AlertDialog(title: Text("Error"), content: Text("必須項目を入力してください")));
       return;
     }
     if(allDay) time="00:00";
-    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo.replaceAll("\n", "\\n")}","all_day": ${allDay},"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${calendarID},${category}","type": "label"}}}}}';
+    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo.replaceAll("\n", "\\n")}","all_day": ${allDay},"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${data.calendarID},${category}","type": "label"}}}}}';
     time="";
     setState(()=>debug=json);
     Map<String,String> headers=
     {
       "Content-Type"  : "application/json",
       "Accept"        : "application/vnd.timetree.v1+json",
-      "Authorization" : "Bearer ${apiKey}"
+      "Authorization" : "Bearer ${data.apiKey}"
     };
     Response resp = await post
     (
-      "https://timetreeapis.com/calendars/${calendarID}/events",
+      "https://timetreeapis.com/calendars/${data.calendarID}/events",
       headers: headers,
       body: json
     );
     int stat=resp.statusCode;
     if(stat != 200 && stat != 201)
     {
+      print(resp.body.toString());
       Map<String, dynamic> json = jsonDecode(resp.body);
       String errors=json["errors"].toString();
       errors = errors.replaceAll("{", "");
       errors = errors.replaceAll("}", "");
       errors = errors.replaceAll(",", "\n");
       showDialog(context: context, builder:(context) =>
-        AlertDialog(title: Text("Error"), content: Text("Failed to post: ${stat}\n\n${errors}")));
+        AlertDialog(title: Text("Error"), content: Text("イベントの作成に失敗しました: ${stat}\n\n${errors}")));
       return;
     }
     showDialog(context: context, builder:(context) =>
-      AlertDialog(title: Text("Completed!"), content: Text("Complete post: ${stat}")));
+      AlertDialog(title: Text("Completed!"), content: Text("イベントを作成しました: ${stat}")));
   }
 
+  @override void initState()
+  {
+    super.initState();
+    Future f=data.init();
+    f.then((value) => setState(()=>category=data.category_submission));
+  }
   @override Widget build(BuildContext context)
   {
     return Scaffold
@@ -93,7 +112,11 @@ class MPState extends State<MainPage>
         IconButton
         (
           icon: Icon(Icons.settings),
-          onPressed: ()=>Navigator.push(context, MaterialPageRoute( builder:(context) => SettingPage() ))
+          onPressed: () async
+          {
+            await Navigator.push(context, MaterialPageRoute( builder:(context) => SettingPage() ));
+            setState(()=>null);
+          }
         )
       ]),
       body:Padding(padding: EdgeInsets.all(15), child: Column(children:
@@ -103,36 +126,36 @@ class MPState extends State<MainPage>
           // 提出物
           Flexible(child:RadioListTile
           (
-            title: Text("Submission"),
+            title: Text("提出物"),
             groupValue: category,
-            value: CATEGORY_SUBMISSION,
+            value: data.category_submission,
             onChanged: (value) => setState(()=>category=value)
           )),
           // 試験
           Flexible(child:RadioListTile
           (
-            title: Text("Exam"),
+            title: Text("試験"),
             groupValue: category,
-            value: CATEGORY_EXAM,
+            value: data.category_exam,
             onChanged: (value) => setState(()=>category=value)
           )),
           // イベント
           Flexible(child:RadioListTile
           (
-            title: Text("Ivent"),
+            title: Text("イベント"),
             groupValue: category,
-            value: CATEGORY_IVENT,
+            value: data.category_ivent,
             onChanged: (value) => setState(()=>category=value)
           )),
         ]),
         // 日付
-        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "*Date ex. 2000-01-01")),
+        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "*日付（例→ 2000-01-01）")),
         Row(children:
         [
           // 終日かどうか
           Flexible(child:CheckboxListTile
           (
-            title: Text("AllDay"),
+            title: Text("終日"),
             value: allDay,
             onChanged:(value)=>setState(()=>allDay=value)
           )),
@@ -143,16 +166,16 @@ class MPState extends State<MainPage>
           Flexible(child:TextField
           (
             onChanged:(value) => time = value,
-            decoration: InputDecoration(hintText: "*Time ex. 23:05")
+            decoration: InputDecoration(hintText: "*時刻（例→ 23:05）")
           ))
         ]),
         // タイトル
-        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "*Title")),
+        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "*タイトル")),
         // メモ
-        TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "Memo"), maxLines: null),
+        TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "メモ"), maxLines: null),
         Container(height: 20),
         // 追加ボタン
-        RaisedButton(onPressed: () => addIvent(), child: Text("Add")),
+        RaisedButton(onPressed: () => addIvent(), child: Text("予定を作成する",style: Theme.of(context).textTheme.headline4)),
         Text(debug)
       ]))
     );
@@ -162,13 +185,19 @@ class MPState extends State<MainPage>
 class SettingPage extends StatelessWidget
 {
   SettingPage({Key key}) : super(key: key);
-  String apiKey, calendarID;
+  String apiKey=data.apiKey, calendarID=data.calendarID;
+  int submissionID = data.category_submission;
+  int examID       = data.category_exam;
+  int iventID      = data.category_ivent;
 
   Future applySetting(BuildContext context) async
   {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString("apiKey"    , apiKey);
     await pref.setString("calendarID", calendarID);
+    await pref.setInt("category_submission", submissionID);
+    await pref.setInt("category_exam", examID);
+    await pref.setInt("category_ivent", iventID);
     Navigator.pop(context);
   }
 
@@ -186,15 +215,40 @@ class SettingPage extends StatelessWidget
       ]),
       body: Padding(padding: EdgeInsets.all(15), child:Column(children:
       [
+        // API Key
         TextField
         (
-          onChanged:(value) => apiKey = value,
-          decoration: InputDecoration(hintText: "TimeTree API Key")
+          controller: TextEditingController(text: data.apiKey),
+          decoration: InputDecoration(labelText: "TimeTree API Key"),
+          onChanged:(value) => apiKey = value
         ),
+        // Calendar ID
         TextField
         (
-          onChanged:(value) => calendarID = value,
-          decoration: InputDecoration(hintText: "TimeTree Calendar ID")
+          controller: TextEditingController(text: data.calendarID),
+          decoration: InputDecoration(labelText: "TimeTree Calendar ID"),
+          onChanged:(value) => calendarID = value
+        ),
+        // Submission label ID
+        TextField
+        (
+          controller: TextEditingController(text: data.category_submission.toString()),
+          decoration: InputDecoration(labelText: "提出物ラベルのID"),
+          onChanged:(value) => submissionID = int.parse(value)
+        ),
+        // Exam label ID
+        TextField
+        (
+          controller: TextEditingController(text: data.category_exam.toString()),
+          decoration: InputDecoration(labelText: "試験ラベルのID"),
+          onChanged:(value) => examID = int.parse(value)
+        ),
+        // Ivent label ID
+        TextField
+        (
+          controller: TextEditingController(text: data.category_ivent.toString()),
+          decoration: InputDecoration(labelText: "イベントラベルのID"),
+          onChanged:(value) => iventID = int.parse(value)
         )
       ]))
     );
