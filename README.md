@@ -11,7 +11,7 @@ APIを用いて、TimeTreeの指定されたカレンダーに予定を追加し
 完全に自分用のソフトなので、使いづらいかもしれません（PR、Issue待ってます）  
 
 ## How to use
-1. [Releases](https://github.com/watasuke102/ExpNote/releases) を開く
+1. [Releases](https://github.com/watasuke102/TimeTree-AddIvent/releases) を開く
 1. 最新リリースの欄の、OSに適した実行形式ファイルをダウンロードする
 1. ダウンロードしたファイルを実行・インストールする
 
