@@ -17,7 +17,7 @@ class App extends StatelessWidget
     return MaterialApp
     (
       title: 'TimeTreeAddIvent',
-      theme: ThemeData(primarySwatch: Colors.lightGreen),
+      theme: ThemeData(primarySwatch: Colors.lightGreen, fontFamily: "mplus"),
       home:  MainPage(),
     );
   }
