@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final int CATEGORY_SUBMISSION = 0;
 final int CATEGORY_EXAM = 1;
@@ -115,6 +116,15 @@ class SettingPage extends StatelessWidget
 {
   SettingPage({Key key}) : super(key: key);
   String apiKey, calendarID;
+
+  Future applySetting(BuildContext context) async
+  {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.setString("apiKey"    , apiKey);
+    await pref.setString("calendarID", calendarID);
+    Navigator.pop(context);
+  }
+
   @override Widget build(BuildContext context)
   {
     return Scaffold
@@ -124,7 +134,7 @@ class SettingPage extends StatelessWidget
         IconButton
         (
           icon: Icon(Icons.check),
-          onPressed: ()=>Navigator.pop(context)
+          onPressed: ()=>applySetting(context)
         )
       ]),
       body: Padding(padding: EdgeInsets.all(15), child:Column(children:
