@@ -76,3 +76,18 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family: mplus
+      fonts:
+        - asset: fonts/mplus/mplus-1p-regular.ttf
+          weight: 400
+        - asset: fonts/mplus/mplus-1p-thin.ttf
+          weight: 100
+        - asset: fonts/mplus/mplus-1p-light.ttf
+          weight: 300
+        - asset: fonts/mplus/mplus-1p-medium.ttf
+          weight: 500
+        - asset: fonts/mplus/mplus-1p-bold.ttf
+          weight: 700
+        - asset: fonts/mplus/mplus-1p-black.ttf
+          weight: 900
