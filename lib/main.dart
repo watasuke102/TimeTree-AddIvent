@@ -52,7 +52,14 @@ class MPState extends State<MainPage>
       AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
       return;
     }
-    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo}","all_day": false,"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "hoeKBuwq36Ad,1","type": "label"}}}}}';
+    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo}","all_day": false,"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${calendarID},${category}","type": "label"}}}}}';
+    Map<String,String> headers=
+    {
+      "Content-Type"  : "application/json",
+      "Accept"        : "application/vnd.timetree.v1+json",
+      "Authorization" : "Bearer ${apiKey}"
+    };
+    
     setState(() => debgJson=json);
   }
 
