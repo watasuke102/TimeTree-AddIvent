@@ -1,16 +1,17 @@
-# TimeTreeAddIvent
+# TimeTree-AddIvent
 
-A new Flutter project.
+## What's this?
 
-## Getting Started
+APIを用いて、TimeTreeの指定されたカレンダーに予定を追加します。  
+このアプリで追加できるイベントは以下の通りです。  
+- 開始時間と終了時刻が一致している
+- ラベルは「提出物」と「試験」と「イベント」の3つ（ラベルIDの設定が必要）  
+完全に自分用のソフトなので、使いづらいかもしれません（PR、Issue待ってます）  
 
-This project is a starting point for a Flutter application.
+## How to use
+1. [Releases](https://github.com/watasuke102/ExpNote/releases) を開く
+1. 最新リリースの欄の、OSに適した実行形式ファイルをダウンロードする
+1. ダウンロードしたファイルを実行・インストールする
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## LICENSE
+MIT SUSHI-WARE License
