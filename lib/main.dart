@@ -127,7 +127,7 @@ class SettingPage extends StatelessWidget
           onPressed: ()=>Navigator.pop(context)
         )
       ]),
-      body: Column(children:
+      body: Padding(padding: EdgeInsets.all(15), child:Column(children:
       [
         TextField
         (
@@ -139,7 +139,7 @@ class SettingPage extends StatelessWidget
           onChanged:(value) => calendarID = value,
           decoration: InputDecoration(hintText: "TimeTree Calendar ID")
         )
-      ])
+      ]))
     );
   }
 }
