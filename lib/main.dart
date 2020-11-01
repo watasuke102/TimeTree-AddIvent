@@ -98,7 +98,7 @@ class MPState extends State<MainPage>
           )),
         ]),
         // 日付
-        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "Date ex. 2000-01-01*")),
+        TextField(onChanged:(value) => date = value, decoration: InputDecoration(hintText: "*Date ex. 2000-01-01")),
         Row(children:
         [
           // 終日かどうか
@@ -115,11 +115,11 @@ class MPState extends State<MainPage>
           Flexible(child:TextField
           (
             onChanged:(value) => time = value,
-            decoration: InputDecoration(hintText: "Time ex. 23:05")
+            decoration: InputDecoration(hintText: "*Time ex. 23:05")
           ))
         ]),
         // タイトル
-        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "Title*")),
+        TextField(onChanged:(value) => title = value, decoration: InputDecoration(hintText: "*Title")),
         // メモ
         TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "Memo"), maxLines: null),
         Container(height: 20),
