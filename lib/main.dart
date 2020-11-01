@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final int CATEGORY_SUBMISSION = 0;
-final int CATEGORY_EXAM = 1;
-final int CATEGORY_IVENT = 2;
+final int CATEGORY_SUBMISSION = 1;
+final int CATEGORY_EXAM       = 2;
+final int CATEGORY_IVENT      = 3;
 
 void main()=>runApp(App());
 
@@ -30,12 +31,28 @@ class MainPage extends StatefulWidget
 class MPState extends State<MainPage>
 {
   bool   allDay=false;
-  int    category=0;
-  String date, time, title, memo;
+  int    category=CATEGORY_SUBMISSION;
+  String date="", time="", title="", memo="";
+  String debgJson="-json here-";
 
-  void addIvent()
+  Future addIvent() async
   {
-
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String apiKey     = pref.getString("apiKey");
+    String calendarID = pref.getString("calendarID");
+    if(
+      apiKey     == "" ||
+      calendarID == "" ||
+      date       == "" ||
+      title      == ""
+    )
+    {
+      showDialog(context: context, builder:(context) =>
+      AlertDialog(title: Text("Error"), content: Text("Please fill in the required items")));
+      return;
+    }
+    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo}","all_day": false,"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "hoeKBuwq36Ad,1","type": "label"}}}}}';
+    setState(() => debgJson=json);
   }
 
   @override Widget build(BuildContext context)
@@ -106,7 +123,8 @@ class MPState extends State<MainPage>
         TextField(onChanged:(value) => memo = value,  decoration: InputDecoration(hintText: "Memo"), maxLines: null),
         Container(height: 20),
         // 追加ボタン
-        RaisedButton(onPressed: () => addIvent(), child: Text("Add"))
+        RaisedButton(onPressed: () => addIvent(), child: Text("Add")),
+        Text(debgJson)
       ]))
     );
   }
