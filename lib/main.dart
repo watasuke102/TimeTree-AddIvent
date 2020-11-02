@@ -65,8 +65,8 @@ class MPState extends State<MainPage>
       return;
     }
     if(allDay) time="00:00";
-    String json='{"data": {"attributes": {"category": "schedule","title": "${title}","description": "${memo.replaceAll("\n", "\\n")}","all_day": ${allDay},"start_at": "${date}T${time}:00.000Z","start_timezone": "Asia/Tokyo","end_at": "${date}T${time}:00.000Z","end_timezone": "Asia/Tokyo"},"relationships": {"label": {"data": {"id": "${data.calendarID},${category}","type": "label"}}}}}';
-    time="";
+    String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${date}T${time}:00.000Z","start_timezone":"Asia/Tokyo","end_at":"${date}T${time}:00.000Z","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
+    if(allDay) time="";
     setState(()=>debug=json);
     Map<String,String> headers=
     {
@@ -119,7 +119,7 @@ class MPState extends State<MainPage>
           }
         )
       ]),
-      body:Padding(padding: EdgeInsets.all(15), child: Column(children:
+      body:SingleChildScrollView(child:Padding(padding: EdgeInsets.all(15), child: Column(children:
       [
         Row(children:
         [
@@ -178,7 +178,7 @@ class MPState extends State<MainPage>
         RaisedButton(onPressed: () => addIvent(), child: Text("予定を作成する",style: Theme.of(context).textTheme.headline4)),
         Text(debug)
       ]))
-    );
+    ));
   }
 }
 
@@ -213,7 +213,7 @@ class SettingPage extends StatelessWidget
           onPressed: ()=>applySetting(context)
         )
       ]),
-      body: Padding(padding: EdgeInsets.all(15), child:Column(children:
+      body:SingleChildScrollView(child:Padding(padding: EdgeInsets.all(15), child:Column(children:
       [
         // API Key
         TextField
@@ -251,6 +251,6 @@ class SettingPage extends StatelessWidget
           onChanged:(value) => iventID = int.parse(value)
         )
       ]))
-    );
+    ));
   }
 }
