@@ -48,7 +48,6 @@ class MPState extends State<MainPage>
   bool   allDay=false;
   int    category=data.category_submission;
   String date="", time="", title="", memo="";
-  String debug="json here";
 
   Future addIvent() async
   {
@@ -67,7 +66,6 @@ class MPState extends State<MainPage>
     if(allDay) time="00:00";
     String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${date}T${time}:00.000+0900","start_timezone":"Asia/Tokyo","end_at":"${date}T${time}:00.000+0900","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
     if(allDay) time="";
-    setState(()=>debug=json);
     Map<String,String> headers=
     {
       "Content-Type"  : "application/json",
@@ -176,7 +174,6 @@ class MPState extends State<MainPage>
         Container(height: 20),
         // 追加ボタン
         RaisedButton(onPressed: () => addIvent(), child: Text("予定を作成する",style: Theme.of(context).textTheme.headline4)),
-        Text(debug)
       ]))
     ));
   }
