@@ -63,9 +63,13 @@ class MPState extends State<MainPage>
         AlertDialog(title: Text("Error"), content: Text("必須項目を入力してください")));
       return;
     }
-    if(allDay) time="00:00";
-    String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${date}T${time}:00.000+0900","start_timezone":"Asia/Tokyo","end_at":"${date}T${time}:00.000+0900","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
-    if(allDay) time="";
+    String iventTime;
+    if(allDay)
+      iventTime = "${date}T00:00:00.000Z";
+    else
+      iventTime = "${date}T${time}:00.000+0900";
+
+    String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${iventTime}","start_timezone":"Asia/Tokyo","end_at":"${iventTime}","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
     Map<String,String> headers=
     {
       "Content-Type"  : "application/json",
@@ -81,9 +85,8 @@ class MPState extends State<MainPage>
     int stat=resp.statusCode;
     if(stat != 200 && stat != 201)
     {
-      print(resp.body.toString());
-      Map<String, dynamic> json = jsonDecode(resp.body);
-      String errors=json["errors"].toString();
+      Map<String, dynamic> errorBody = jsonDecode(resp.body);
+      String errors=errorBody["errors"].toString();
       errors = errors.replaceAll("{", "");
       errors = errors.replaceAll("}", "");
       errors = errors.replaceAll(",", "\n");
