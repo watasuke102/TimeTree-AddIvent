@@ -160,7 +160,7 @@ class MPState extends State<MainPage>
             onChanged:(value)=>setState(()=>allDay=value)
           )),
 
-          Container(width: 100),
+          Container(width: 10),
 
           // 時間
           Flexible(child:TextField
