@@ -65,7 +65,7 @@ class MPState extends State<MainPage>
       return;
     }
     if(allDay) time="00:00";
-    String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${date}T${time}:00.000Z","start_timezone":"Asia/Tokyo","end_at":"${date}T${time}:00.000Z","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
+    String json='{"data":{"attributes":{"category":"schedule","title":"${title}","description":"${memo.replaceAll("\n", "\\n")}","all_day":${allDay},"start_at":"${date}T${time}:00.000+0900","start_timezone":"Asia/Tokyo","end_at":"${date}T${time}:00.000+0900","end_timezone":"Asia/Tokyo"},"relationships":{"label":{"data":{"id":"${data.calendarID},${category}","type":"label"}}}}}';
     if(allDay) time="";
     setState(()=>debug=json);
     Map<String,String> headers=
